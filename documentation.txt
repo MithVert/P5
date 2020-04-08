@@ -7,7 +7,6 @@ En effet le nutriscore sera notre premier argument pour proposer des substituts.
 Choix des catégories :
 Produits à tartiner sucrés
 Dessert
-Biscuits et gâteaux
 sauces
 plats préparés
 boissons
