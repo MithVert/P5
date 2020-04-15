@@ -34,13 +34,19 @@ class Datafile():
             else:
                 self.fine = self.fine + column + ";"
         
-        for idproduct in range(self.rawdata["count"]):
+        for idproduct in range(50):
             for column in self.columns:
-                print(self.fine)
-                if column == "url":
-                    self.fine = self.fine + self.rawdata["products"][idproduct][column] + "\n"
-                else:
-                    self.fine = self.fine + self.rawdata["products"][idproduct][column] + ";"
+                #since no fields are sure to exist except for bar_code, we have to anticipate KeyError
+                try:
+                    if column == "url":
+                        self.fine = self.fine + self.rawdata["products"][idproduct][column] + "\n"
+                    else:
+                        self.fine = self.fine + self.rawdata["products"][idproduct][column] + ";"
+                except KeyError:
+                    if column == "url":
+                        self.fine = self.fine + "\n"
+                    else:
+                        self.fine = self.fine + ";"
     
     def getfine(self):
 
@@ -56,12 +62,16 @@ class Datafile():
         csvfile.close()
 
 if __name__ == "__main__":
-
-    """just for testing the class"""
-    biscuits_et_gateauxgradea = Datafile("bddrawbiscuits-et-gateauxgradea.json")
-    print(biscuits_et_gateauxgradea)
-    biscuits_et_gateauxgradea.createfine()
-    print(biscuits_et_gateauxgradea)
-    biscuits_et_gateauxgradea.save_as_csv()
-
-#every field is optionnal, got to test wether it exists before trying to get its value
+    print("initialisation")
+    chosen_data = ("boissons","plats-prepares","biscuits-et-gateaux","produits-a-tartiner-sucres","sauces")
+    chosen_data_file = []
+    for i in chosen_data:
+        for j in ("gradea","gradeb"):
+            chosen_data_file.append("bddraw"+i+j+".json")
+    
+    for i in chosen_data_file:
+        print(i, end="\t\t")
+        data = Datafile(i)
+        data.createfine()
+        data.save_as_csv()
+        print("Done")

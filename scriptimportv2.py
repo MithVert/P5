@@ -38,7 +38,7 @@ class   OpenfoodRequest():
 
             raise ValueError
 
-def creating_raw_file(chosen_categories = ("boissons","plats-prepares","biscuits-et-gateaux","produits-a-tartiner-sucres","sauces"),chosen_grades = ("a","b")):
+def creating_raw_files(chosen_categories = ("boissons","plats-prepares","biscuits-et-gateaux","produits-a-tartiner-sucres","sauces"),chosen_grades = ("a","b")):
 
     """Uses Openfoodrequest class - create separates json files for every chosen categories and grades"""
 
@@ -59,4 +59,4 @@ def creating_raw_file(chosen_categories = ("boissons","plats-prepares","biscuits
             print("Done")
 
 if __name__=="__main__":
-    creating_raw_file()
+    creating_raw_files()
