@@ -1,3 +1,5 @@
+"""to be deleted"""
+
 import mysql.connector
 
 cnx = mysql.connector.connect(user='root')

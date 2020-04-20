@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 # coding: utf-8
 
+"""to be continued"""
+
 import requests
 import time
 import json
