@@ -3,7 +3,9 @@
 
 import json
 
-class Datafile():
+class JSONDatafile():
+
+    """class including every method we need to retrieve what we wants from the jsonfile the openfoodfact API gave us"""
 
     def __init__(self,file):
 
@@ -17,16 +19,16 @@ class Datafile():
     
     def __repr__(self):
 
+        """This method only has testing purposes"""
+
         if self.fine == "":
             return self.title
         else:
             return self.fine
-
-    def getraw(self):
-
-        return self.rawdata
     
     def createfine(self):
+
+        """fills self.fine with the data we fetch from the api json file, returns a string csv-formated"""
 
         for column in self.columns:
             if column == "url":
@@ -34,7 +36,7 @@ class Datafile():
             else:
                 self.fine = self.fine + column + ";"
         
-        for idproduct in range(50):
+        for idproduct in range(min(50,self.rawdata["count"])):
             for column in self.columns:
                 #since no fields are sure to exist except for bar_code, we have to anticipate KeyError
                 try:
@@ -47,15 +49,16 @@ class Datafile():
                         self.fine = self.fine + "\n"
                     else:
                         self.fine = self.fine + ";"
-    
-    def getfine(self):
-
-        return self.fine
 
     def save_as_csv(self, file="default"):
 
+        """save the extracted data as a csv file"""
+
         if file == "default":
             file = self.title + ".csv"
+        
+        if self.fine == "":
+            self.createfine()
         
         csvfile = open(file, "w")
         csvfile.write(self.fine)
@@ -71,7 +74,6 @@ if __name__ == "__main__":
     
     for i in chosen_data_file:
         print(i, end="\t\t")
-        data = Datafile(i)
-        data.createfine()
+        data = JSONDatafile(i)
         data.save_as_csv()
         print("Done")
