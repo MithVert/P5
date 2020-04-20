@@ -4,8 +4,13 @@
 import requests
 import time
 import json
+import mysql.connector
 
 chosencategories = ("boissons","plats-prepares","biscuits-et-gateaux","produits-a-tartiner-sucres","sauces")
+chosencolumns = ["product_name","generic_name","nutrition_grade_fr","stores","url"]
+chosengrades = ("a","b")
+databasename = "openfooddata"
+credentialspath = "/home/gery/Documents/OC/P5Global/credentials.json"
 
 class   OpenfoodRequest():
 
@@ -42,10 +47,10 @@ class Categorie():
 
     """class getting and storing the data corresponding to one categorie"""
 
-    def __init__(self, name, n=50, grades=("a","b"), columns=["product_name","generic_name","nutrition_grade_fr","stores","url"]):
+    def __init__(self, name, n=50, grades=chosengrades, columns=chosencolumns):
 
         self.name = name
-        self.chosengrades = grades
+        self.grades = grades
         self.columns = columns
         self.n = n
         self.data = []
@@ -81,7 +86,38 @@ class Categorie():
 
             print("Done")
     
-    def savetomysql(self):
+    def savetomysql(self, sqlupload):
 
         if self.data == []:
             self.get()
+        
+        sqlupload(self.data, self.name)
+
+class Sqlupload():
+
+    """class uploading data stored as list of dictionnaries in sql database"""
+
+    def __init__(self,data, table, database=databasename, credentials = credentialspath):
+        self.data = data
+        self.tablename = table
+        self.database = database
+        self.credentials = json.load(open(credentials,"r"))
+    
+    def connect(self):
+
+        """connect to self.database, if self.database doesn't exist, create it before connecting"""
+
+        try:
+            self.cnx = mysql.connector.connect(**self.credentials, database=self.database)
+
+        except mysql.connector.errors.DatabaseError:
+            cnx = mysql.connector.connect(**self.credentials)
+            query = "CREATE DATABASE {}".format(self.database)
+            cur = cnx.cursor()
+            cur.execute(query)
+            cnx.close()
+            self.cnx = mysql.connector.connect(**self.credentials, database=self.database)
+    
+    def disconnect(self):
+
+        self.cnx.close()
