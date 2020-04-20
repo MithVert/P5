@@ -59,9 +59,9 @@ class Categorie():
     
     def get(self):
 
-        """fills self.data with categories' data, data is a list of dictionnary"""
+        """fills self.data with categories' data, data is a list of dictionnaries"""
 
-        for grade in self.chosengrades:
+        for grade in self.grades:
 
             print("Importing data :\t"+self.name+" "+grade,end="\n\t\t\t\t\t")
             apiresponse = OpenfoodRequest(self.name, grade, self.n).get()
@@ -87,23 +87,17 @@ class Categorie():
                 after = time.time()
 
             print("Done")
-    
-    def savetomysql(self, sqlupload):
+        return self.data
 
-        if self.data == []:
-            self.get()
-        
-        sqlupload(self.data, self.name)
-
-class Sqlupload():
+class Sqldatacreator():
 
     """class uploading data stored as list of dictionnaries in sql database"""
 
-    def __init__(self,data, table, database=databasename, credentials = credentialspath):
+    def __init__(self,data,database=databasename, credentials = credentialspath):
         self.data = data
-        self.tablename = table
         self.database = database
         self.credentials = json.load(open(credentials,"r"))
+        self.cnx = None
     
     def connect(self):
 
@@ -119,7 +113,23 @@ class Sqlupload():
             cur.execute(query)
             cnx.close()
             self.cnx = mysql.connector.connect(**self.credentials, database=self.database)
+        
     
     def disconnect(self):
 
         self.cnx.close()
+
+    def createtable(self,table):
+
+        """yet to be done"""
+
+        pass
+
+    def insertdataintotable(self,table):
+
+        if self.cnx :
+            pass
+        else:
+            self.connect()
+
+        """yet to be done"""
