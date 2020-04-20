@@ -12,12 +12,21 @@ class CSVData():
         self.categorie = ("boissons","plats-prepares","biscuits-et-gateaux","produits-a-tartiner-sucres","sauces")
 
     def connect(self):
+
+        """ne fait pas sens au sein de la classe CSVData"""
+
         self.cnx = mysql.connector.connect(**self.credentials)
 
     def disconnect(self):
+
+        """ne fait pas sens au sein de la classe CSVData"""
+
         self.cnx.close()
     
     def tablecreation(self):
+
+        """ne fait pas sens au sein de la classe CSVData"""
+
         try:
             query = "CREATE DATABASE {}".format(self.mysqldatabase)
             cur = self.cnx.cursor()
@@ -28,6 +37,8 @@ class CSVData():
             if a=="y" or a=="Y":
                 query = "DROP DATABASE {}".format(self.mysqldatabase)
                 cur = self.cnx.cursor()
+                cur.execute(query)
+                query = "CREATE DATABASE {}".format(self.mysqldatabase)
                 cur.execute(query)
                 return True
             else:
