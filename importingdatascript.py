@@ -10,6 +10,8 @@ import mysql.connector
 
 chosencategories = ("boissons","plats-prepares","biscuits-et-gateaux","produits-a-tartiner-sucres","sauces")
 chosencolumns = ["product_name","generic_name","nutrition_grade_fr","stores","url"]
+chosencolumns2 = chosencolumns
+chosencolumns2.append("categorie")
 chosengrades = ("a","b")
 databasename = "openfooddata"
 credentialspath = "/home/gery/Documents/OC/P5Global/credentials.json"
@@ -49,7 +51,7 @@ class Categorie():
 
     """class getting and storing the data corresponding to one categorie"""
 
-    def __init__(self, name, n=50, grades=chosengrades, columns=chosencolumns):
+    def __init__(self, name, n=50, grades=chosengrades, columns=chosencolumns2):
 
         self.name = name
         self.grades = grades
@@ -95,7 +97,8 @@ class Sqldatacreator():
 
     """class uploading data stored as list of dictionnaries in sql database"""
 
-    def __init__(self,data,database=databasename, credentials = credentialspath):
+    def __init__(self,data,database=databasename, credentials = credentialspath, columns = chosencolumns):
+        self.columns = columns
         self.data = data
         self.database = database
         self.credentials = json.load(open(credentials,"r"))
@@ -109,23 +112,33 @@ class Sqldatacreator():
             self.cnx = mysql.connector.connect(**self.credentials, database=self.database)
 
         except mysql.connector.errors.DatabaseError:
-            cnx = mysql.connector.connect(**self.credentials)
-            query = "CREATE DATABASE {}".format(self.database)
-            cur = cnx.cursor()
+            self.cnx = mysql.connector.connect(**self.credentials)
+            query = "CREATE DATABASE {} CHARACTER SET utf8".format(self.database)
+            cur = self.cnx.cursor()
             cur.execute(query)
-            cnx.close()
-            self.cnx = mysql.connector.connect(**self.credentials, database=self.database)
+            query = "USE {}".format(self.database)
+            cur.execute(query)
         
     
     def disconnect(self):
 
         self.cnx.close()
 
-    def createtable(self,table):
+    def createtable(self):
 
-        """yet to be done"""
+        if self.cnx :
+            pass
+        else:
+            self.connect()
 
-        pass
+        table = "CREATE TABLE `produits` ( `id` SMALLINT AUTO_INCREMENT, "
+
+        for s in self.columns:
+            table = table + "`{}` VARCHAR(100), ".format(s)
+        table = table + "PRIMARY KEY(id)) ENGINE=InnoDB;"
+        cur = self.cnx.cursor()
+        cur.execute(table)
+        
 
     def insertdataintotable(self,table):
 
@@ -139,11 +152,8 @@ class Sqldatacreator():
 #test part
 
 if __name__=="__main__":
-    data=[]
     for i in chosencategories:
         cat = Categorie(i)
         dataadd = cat.get()
         sqlbdd = Sqldatacreator(dataadd)
-        sqlbdd.connect()
-        sqlbdd.disconnect()
-    
+        sqlbdd.createtable()
