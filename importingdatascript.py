@@ -61,24 +61,26 @@ class Categorie():
 
         """fills self.data with categories' data, data is a list of dictionnaries"""
 
+        compting = 0
+
         for grade in self.grades:
 
             print("Importing data :\t"+self.name+" "+grade,end="\n\t\t\t\t\t")
             apiresponse = OpenfoodRequest(self.name, grade, self.n).get()
             before = time.time()
-            rawdata = json.loads(apiresponse)
+            rawdata = apiresponse
 
             for idproduct in range (min(self.n,rawdata["count"])):
 
-                for column in self.columns:
+                self.data.append({})
 
-                    self.data.append({})
+                for column in self.columns:
                     #since no fields are sure to exist except for bar_code, we have to anticipate KeyError
                     try:
-                        self.data[idproduct][column] = rawdata["products"][idproduct][column]
+                        self.data[compting][column] = rawdata["products"][idproduct][column]
                     except KeyError:
-                        self.data[idproduct][column] = ""
-
+                        self.data[compting][column] = ""
+                compting = compting + 1
             #waiting 1 second between each API Request
             after = time.time()
 
@@ -133,3 +135,15 @@ class Sqldatacreator():
             self.connect()
 
         """yet to be done"""
+
+#test part
+
+if __name__=="__main__":
+    data=[]
+    for i in chosencategories:
+        cat = Categorie(i)
+        dataadd = cat.get()
+        sqlbdd = Sqldatacreator(dataadd)
+        sqlbdd.connect()
+        sqlbdd.disconnect()
+    
