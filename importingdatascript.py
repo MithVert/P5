@@ -130,14 +130,20 @@ class Sqldatacreator():
             pass
         else:
             self.connect()
+        
+        try:
+            table = "CREATE TABLE `produits` ( `id` SMALLINT AUTO_INCREMENT, "
 
-        table = "CREATE TABLE `produits` ( `id` SMALLINT AUTO_INCREMENT, "
-
-        for s in self.columns:
-            table = table + "`{}` VARCHAR(100), ".format(s)
-        table = table + "PRIMARY KEY(id)) ENGINE=InnoDB;"
-        cur = self.cnx.cursor()
-        cur.execute(table)
+            for s in self.columns:
+                table = table + "`{}` VARCHAR(100), ".format(s)
+            table = table + "PRIMARY KEY(`id`)) ENGINE=InnoDB;"
+            cur = self.cnx.cursor()
+            cur.execute(table)
+        except mysql.connector.errors.Error as err:
+            if str(err) == "1050 (42S01): Table 'produits' already exists":
+                pass
+            else:
+                raise err
         
 
     def insertdataintotable(self,table):
