@@ -9,9 +9,7 @@ import json
 import mysql.connector
 
 chosencategories = ("boissons","plats-prepares","biscuits-et-gateaux","produits-a-tartiner-sucres","sauces")
-chosencolumns = ["product_name","generic_name","nutrition_grade_fr","stores","url"]
-chosencolumns2 = chosencolumns
-chosencolumns2.append("categorie")
+chosencolumns = ["product_name","generic_name","nutrition_grade_fr","stores","url","categories","categorie"]
 chosengrades = ("a","b")
 databasename = "openfooddata"
 credentialspath = "/home/gery/Documents/OC/P5Global/credentials.json"
@@ -51,7 +49,7 @@ class Categorie():
 
     """class getting and storing the data corresponding to one categorie"""
 
-    def __init__(self, name, n=50, grades=chosengrades, columns=chosencolumns2):
+    def __init__(self, name, n=50, grades=chosengrades, columns=chosencolumns):
 
         self.name = name
         self.grades = grades
@@ -61,7 +59,7 @@ class Categorie():
     
     def get(self):
 
-        """fills self.data with categories' data, data is a list of dictionnaries"""
+        """fills self.data with categories data, data is a list of dictionnaries"""
 
         compting = 0
 
@@ -81,8 +79,10 @@ class Categorie():
                     try:
                         if column == "categorie":
                             self.data[compting][column] = self.name
+                        elif column == "categories":
+                            self.data[compting][column] = rawdata["products"][idproduct][column][:200]
                         else:
-                            self.data[compting][column] = rawdata["products"][idproduct][column]
+                            self.data[compting][column] = rawdata["products"][idproduct][column][:200]
                     except KeyError:
                         self.data[compting][column] = ""
                 compting = compting + 1
@@ -138,7 +138,7 @@ class Sqldatacreator():
             table = "CREATE TABLE `produits` ( `id` SMALLINT AUTO_INCREMENT, "
 
             for s in self.columns:
-                    table = table + "`{}` VARCHAR(200), ".format(s)
+                table = table + "`{}` VARCHAR(200), ".format(s)
             table = table + "PRIMARY KEY(`id`)) ENGINE=InnoDB;"
             cur = self.cnx.cursor()
             cur.execute(table)
@@ -179,9 +179,9 @@ class Sqldatacreator():
 
 if __name__=="__main__":
     data = []
-    for categorie in chosencategories:
-        cat = Categorie(categorie)
-        dataadd = cat.get()
+    for categorie_name in chosencategories:
+        categorie = Categorie(categorie_name)
+        dataadd = categorie.get()
         data = data.__add__(dataadd)
     sqlbdd = Sqldatacreator(data)
     sqlbdd.createtable()
