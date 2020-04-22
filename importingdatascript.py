@@ -79,7 +79,10 @@ class Categorie():
                 for column in self.columns:
                     #since no fields are sure to exist except for bar_code, we have to anticipate KeyError
                     try:
-                        self.data[compting][column] = rawdata["products"][idproduct][column]
+                        if column == "categorie":
+                            self.data[compting][column] = self.name
+                        else:
+                            self.data[compting][column] = rawdata["products"][idproduct][column]
                     except KeyError:
                         self.data[compting][column] = ""
                 compting = compting + 1
@@ -135,7 +138,7 @@ class Sqldatacreator():
             table = "CREATE TABLE `produits` ( `id` SMALLINT AUTO_INCREMENT, "
 
             for s in self.columns:
-                table = table + "`{}` VARCHAR(100), ".format(s)
+                    table = table + "`{}` VARCHAR(200), ".format(s)
             table = table + "PRIMARY KEY(`id`)) ENGINE=InnoDB;"
             cur = self.cnx.cursor()
             cur.execute(table)
@@ -146,20 +149,41 @@ class Sqldatacreator():
                 raise err
         
 
-    def insertdataintotable(self,table):
+    def insertdataintotable(self):
 
         if self.cnx :
             pass
         else:
             self.connect()
 
-        """yet to be done"""
+        cur = self.cnx.cursor()
+
+        print("Saving data to MySQL :\t",end="\n\t\t\t\t\t")
+
+        columnstr = "("
+        valuestr = " VALUES ("
+        for c in self.columns:
+            columnstr = columnstr + c +", "
+            valuestr = valuestr + "%({})s, ".format(c)
+        columnstr = columnstr[:-2]+")"
+        valuestr = valuestr[:-2]+")"
+        
+        for pdt in self.data:
+            addpdt = "INSERT INTO produits " + columnstr + valuestr + ";"
+            cur.execute(addpdt,pdt)
+            self.cnx.commit()
+        cur.close()
+        print("Done")
 
 #test part
 
 if __name__=="__main__":
-    for i in chosencategories:
-        cat = Categorie(i)
+    data = []
+    for categorie in chosencategories:
+        cat = Categorie(categorie)
         dataadd = cat.get()
-        sqlbdd = Sqldatacreator(dataadd)
-        sqlbdd.createtable()
+        data = data.__add__(dataadd)
+    sqlbdd = Sqldatacreator(data)
+    sqlbdd.createtable()
+    sqlbdd.insertdataintotable()
+    sqlbdd.disconnect()
