@@ -1,8 +1,6 @@
 #! /usr/bin/env python3
 # coding: utf-8
 
-"""to be continued"""
-
 import requests
 import time
 import json
@@ -47,7 +45,7 @@ class   OpenfoodRequest():
 
 class Categorie():
 
-    """class getting and storing the data corresponding to one categorie"""
+    """class extracting the data from the API Response corresponding to one categorie"""
 
     def __init__(self, name, n=50, grades=chosengrades, columns=chosencolumns):
 
@@ -59,7 +57,7 @@ class Categorie():
     
     def get(self):
 
-        """fills self.data with categories data, data is a list of dictionnaries"""
+        """fills self.data with categories data, self.data is a list of dictionnaries, returns self.data"""
 
         compting = 0
 
