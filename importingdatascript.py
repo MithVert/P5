@@ -1,5 +1,5 @@
-#! /usr/bin/env python3
-# coding: utf-8
+
+"""obsolete -> got split up into several files"""
 
 import requests
 import time
