@@ -38,7 +38,7 @@ class Categorie():
 
     """class extracting the data from the API Response corresponding to one categorie"""
 
-    def __init__(self, name, n=50, grades=chosengrades, columns=chosencolumns):
+    def __init__(self, name, n=n, grades=chosengrades, columns=chosencolumns):
 
         self.name = name
         self.grades = grades
@@ -69,9 +69,9 @@ class Categorie():
                         if column == "categorie":
                             self.data[compting][column] = self.name
                         elif column == "categories":
-                            self.data[compting][column] = rawdata["products"][idproduct][column][:200]
+                            self.data[compting][column] = rawdata["products"][idproduct][column][:varchar_length]
                         else:
-                            self.data[compting][column] = rawdata["products"][idproduct][column][:200]
+                            self.data[compting][column] = rawdata["products"][idproduct][column][:varchar_length]
                     except KeyError:
                         self.data[compting][column] = ""
                 compting = compting + 1

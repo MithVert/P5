@@ -7,9 +7,10 @@ from dialogwithOFFAPI import *
 
 if __name__=="__main__":
     data = []
-    for categorie in chosencategories:
-        data = data + Categorie(categorie).get()
-    sqlcreator = Sqldatacreator(data)
-    sqlcreator.connect()
-    sqlcreator.createtable()
-    sqlcreator.insertdataintotable()
+    #for categorie in chosencategories:
+    #    data = data + Categorie(categorie).get()
+    sqlcreator = Sqldatabasecreator(data)
+    #sqlcreator.connect()
+    #sqlcreator.createtable()
+    #sqlcreator.insertdataintotable()
+    sqlcreator.createcategorietables()
