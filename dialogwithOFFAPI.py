@@ -3,6 +3,17 @@ import requests
 import time
 import json
 
+def getalldata(categories = chosencategories):
+
+    """returns all the chosen data from OFF"""
+
+    data = []
+    for categorie in categories:
+        a = Categorie(categorie).get()
+        data = data + a
+    
+    return data
+
 class   OpenfoodRequest():
 
     """Class representing the specific type of request to openfooddata our App will use"""

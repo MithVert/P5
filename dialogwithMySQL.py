@@ -184,3 +184,53 @@ class Sqldatabase():
                 cur.execute(query,[data])
             self.cnx.commit()
             cur.close()
+    
+    def createsubstitutetable(self):
+
+        if self.cnx:
+            pass
+        else:
+            self.connect()
+        
+        table = "CREATE TABLE `Substituts` ( `id` SMALLINT, PRIMARY KEY(`id`))".format(varchar_length)
+        cur = self.cnx.cursor()
+        cur.execute(table)
+        self.cnx.commit()
+        cur.close()
+
+    def loaddata(self,data):
+
+        self.drop()
+        self.connect()
+        self.data = data
+        self.createglobaltable()
+        self.insertdataintoglobaltable()
+        self.createcategorietables()
+        self.createsubstitutetable()
+    
+    def drop(self):
+
+        if self.cnx:
+            pass
+        else:
+            self.connect()
+        
+        cur = self.cnx.cursor()
+        query = "DROP DATABASE {}".format(self.database)
+        cur.execute(query)
+        self.cnx.commit()
+        cur.close()
+        self.cnx.disconnect()
+    
+    def insertsubstitute(self,id):
+
+        if self.cnx:
+            pass
+        else:
+            self.connect()
+        
+        query = "INSERT INTO Substituts (id) VALUES (%s)"
+        cur = self.cnx.cursor()
+        cur.execute(query,[id])
+        self.cnx.commit()
+        cur.close()
