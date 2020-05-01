@@ -51,9 +51,9 @@ class Sqldatabase():
 
     def createglobaltable(self):
 
-        """Create the global table where every product is referenced"""
+        """Create the global table <Products> where every product is referenced"""
         
-        table = "CREATE TABLE `produits` ( `id` SMALLINT AUTO_INCREMENT, "
+        table = "CREATE TABLE `Products` ( `id` SMALLINT AUTO_INCREMENT, "
 
         for s in self.columns:
             table = table + "`{}` VARCHAR({}), ".format(s,varchar_length)
@@ -64,7 +64,7 @@ class Sqldatabase():
 
     def insertdataintoglobaltable(self):
 
-        """Saves self.data in the global table `produits` in MySQL"""
+        """Saves <self.data> in the global table <Products> in MySQL"""
 
         cur = self.cnx.cursor()
 
@@ -79,17 +79,18 @@ class Sqldatabase():
         valuestr = valuestr[:-2]+")"
         
         for pdt in self.data:
-            addpdt = "INSERT INTO produits " + columnstr + valuestr + ";"
+            addpdt = "INSERT INTO Products " + columnstr + valuestr + ";"
             cur.execute(addpdt,pdt)
             self.cnx.commit()
         cur.close()
         print("Done")
     
-    def listingundercategories(self, categorie):
+    def listingsubcategories(self, categorie):
 
-        """ Returns a list of all the subcategories the products of a main<categorie> have """
+        """ Returns a list of (<subcategories>,<Nb of occurences of the subcategorie>) among the products where categorie=<categorie> """
 
-        undercategories = []
+        subcategories = []
+        subcategoriescount = []
 
         cur = self.cnx.cursor()
         query = """SELECT categories FROM produits WHERE categorie = "{}" ;""".format(underscoretodash(categorie))
@@ -98,49 +99,47 @@ class Sqldatabase():
         for categories in cur:
             
             categories_temp = categories[0].split(", ")
-            
-            compt = 0
 
             for i in range(len(categories_temp)):
-
-                compt = compt + len(categories_temp[i])+2
-
-                if compt >= varchar_length:
-                    break
-                else:
-                    if ":" in categories_temp[i]:
-                        continue
-                    elif "," in categories_temp[i]:
-                        categories_temp_2 = categories_temp[i].split(",")
-                        for j in range(len(categories_temp_2)):
-                            compt = compt + len(categories_temp_2[j])+1
-                            if ":" in categories_temp_2[j]:
-                                continue
-                            elif categories_temp_2[j] not in undercategories and detect(categories_temp_2[j])=="fr":
-                                undercategories.append(categories_temp_2[j])
-                    elif categories_temp[i] not in undercategories and detect(categories_temp[i])=="fr":
-                        undercategories.append(categories_temp[i])
-
-        return undercategories
+                if ":" in categories_temp[i]:
+                    continue
+                elif "," in categories_temp[i]:
+                    categories_temp_2 = categories_temp[i].split(",")
+                    for j in range(len(categories_temp_2)):
+                        if categories_temp_2[j] in subcategories:
+                            subcategoriescount[subcategories.index(categories_temp_2[j])] = subcategoriescount[subcategories.index(categories_temp_2[j])] + 1
+                        elif detect(categories_temp_2[j])=="fr":
+                            subcategories.append(categories_temp_2[j])
+                            subcategoriescount.append(1)
+                elif categories_temp[i] in subcategories:
+                    subcategoriescount[subcategories.index(categories_temp[i])] = subcategoriescount[subcategories.index(categories_temp[i])] + 1 
+                elif detect(categories_temp[i])=="fr":
+                    subcategories.append(categories_temp[i])
+                    subcategoriescount.append(1)
+        
+        return [(subcategories[k],subcategoriescount[k]) for k in range(len(subcategories))]
     
-    def createandfillcategorietables(self):
+    def createandfillcategoriestable(self):
 
-        """Creates tables `Table_{categorie}` for each categorie in chosencategories - Fills them with every OFFCategorie among the products from the categorie"""
+        """Create table `Categories` for each categorie in chosencategories - Fills them with every OFFCategorie among the products from the categorie"""
 
+        query = "CREATE TABLE `Categories` ( `id` SMALLINT AUTO_INCREMENT, `subcategorie` VARCHAR({}), `count` SMALLINT, `maincategorie` VARCHAR({}), PRIMARY KEY(`id`))".format(varchar_length,varchar_length)
+        cur = self.cnx.cursor()
+        cur.execute(query)
+        
         for categorie in self.categories:
 
             categorie = dashtounderscore(categorie)
+            datatoinsert = self.listingsubcategories(categorie)
 
-            cur = self.cnx.cursor()
-            query = "CREATE TABLE `Table_{}` ( `id` SMALLINT AUTO_INCREMENT, `{}` VARCHAR({}), PRIMARY KEY(`id`))".format(categorie,categorie,varchar_length)
-            cur.execute(query)
-            datatoinsert = self.listingundercategories(categorie)
             for data in datatoinsert:
-                data = data[:varchar_length]
-                query = "INSERT INTO Table_{} ({}) VALUES (".format(categorie, categorie)+"%s)"
-                cur.execute(query,[data])
-            self.cnx.commit()
-            cur.close()
+                
+                query = "INSERT INTO Categories (subcategorie, count, maincategorie) VALUES (%s,%s,%s)"
+                data = [data[0][:varchar_length],data[1],categorie]
+                cur = self.cnx.cursor()
+                cur.execute(query,data)
+                self.cnx.commit()
+                cur.close()
     
     def createsubstitutetable(self):
         
@@ -157,7 +156,7 @@ class Sqldatabase():
         self.data = data
         self.createglobaltable()
         self.insertdataintoglobaltable()
-        self.createandfillcategorietables()
+        self.createandfillcategoriestable()
         self.createsubstitutetable()
     
     def drop(self):
@@ -192,7 +191,7 @@ class Sqldatabase():
 
         """returns a list of dictionnaries, each dictionnary containing every info on the product"""
 
-        query = "SELECT produits.* FROM Substitutes INNER JOIN produits ON produits.id = Substitutes.id"
+        query = "SELECT Products.* FROM Substitutes INNER JOIN Products ON Products.id = Substitutes.id"
         cur = self.cnx.cursor(dictionary=True)
         cur.execute(query)
         return [row for row in cur]
@@ -201,7 +200,7 @@ class Sqldatabase():
 
         """returns a dictionnary containing every info on the product"""
 
-        query = "SELECT {} FROM produits WHERE id = {}".format(self.columnsasstr,id)
+        query = "SELECT {} FROM Products WHERE id = {}".format(self.columnsasstr,id)
         cur = self.cnx.cursor(dictionary=True)
         cur.execute(query)
         return [row for row in cur][0]
@@ -219,7 +218,7 @@ class Sqldatabase():
 
         """returns a list of product id with the said subcategories"""
 
-        query = "SELECT id FROM produits WHERE (categorie = '{}')".format(categorie)
+        query = "SELECT id FROM Products WHERE (categorie = '{}')".format(categorie)
         for subcat in listofsubcategories:
             query = query + "AND (categories REGEXP '.*({}).*')".format(subcat)
         cur = self.cnx.cursor()
