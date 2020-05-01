@@ -1,6 +1,3 @@
-#! /usr/bin/env python3
-# coding: utf-8
-
 from parameters import *
 from dialogwithMySQL import *
 from dialogwithOFFAPI import *
@@ -14,11 +11,11 @@ if __name__=="__main__":
         print("Souhaitez-vous")
         userchoice = choice(["Réinitialiser les Bases de Données", "Continuer avec les données enregistrées", "Quitter"])
 
-        if userchoice[0] == 0:
+        if userchoice[1] == "Réinitialiser les Bases de Données":
             sqldatabase = Sqldatabase()
             sqldatabase.loaddata(getalldata())
         
-        elif userchoice[0] == 1:
+        elif userchoice[1] == "Continuer avec les données enregistrées":
             sqldatabase = Sqldatabase()
             sqldatabase.connect()
         
@@ -27,43 +24,11 @@ if __name__=="__main__":
 
         userchoice = choice(["Consulter mes substituts","Chercher un nouveau substitut"])
 
-        if userchoice[0] == 0:
+        if userchoice[1] == "Consulter mes substituts":
+            #there is still work to be done for the people who are still alive
+            pass
 
-            listidsubstitutes = sqldatabase.getsubstituteaslist()
-            listsubstitutes = []
-
-            for i in listidsubstitutes:
-
-                listsubstitutes.append(sqldatabase.getproductinfo(int(i)))
-
-            listsubstitutesname = []
-
-            for i in listsubstitutes:
-
-                if i[1] == "":
-                    listsubstitutesname.append(i[2])
-                else:
-                    listsubstitutesname.append(i[1])
-            
-            print("Liste de vos substituts, sélectionnez celui que vous souhaitez consulter")
-
-            userchoice_sub = choice(listsubstitutesname+["Quitter"])
-
-            if userchoice_sub[1] == "Quitter":
-
-                break
-
-            substitut = listsubstitutes[userchoice_sub[0]]
-
-            print(userchoice_sub[1])
-            userchoice_sub_col = choice(chosencolumns)
-
-            if substitut[userchoice_sub_col[1]] == "":
-                print("Information manquante")
-            else:
-                print(substitut[userchoice_sub_col[1]])
-
-        elif userchoice[0] == 1:
+        elif userchoice[1] == "Chercher un nouveau substitut":
 
             print("Recherche d'un nouveau substitut : choix de la categorie")
             userchoicecategorie = choice(chosencategories)
@@ -73,10 +38,10 @@ if __name__=="__main__":
             productlistname = []
             for j in productlist:
                 i = sqldatabase.getproductinfo(j)
-                if i[1] == "":
-                    productlistname.append(i[2])
+                if not i["product_name"]:
+                    productlistname.append(i["generic_name"])
                 else:
-                    productlistname.append(i[1])
+                    productlistname.append(i["product_name"])
             usersubstitutechoice = choice(productlistname)
             sqldatabase.insertsubstitute(productlist[usersubstitutechoice[0]])
             print("Produit ajouté à vos substituts")

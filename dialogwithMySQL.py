@@ -8,7 +8,7 @@ DetectorFactory.seed = 0
 
 class Sqldatabase():
 
-    """Class used to dialog with MySQL local database"""
+    """Class used to dialog with MySQL local database | only get-, insertsubstitute and loaddata methods should be called outside of the Class"""
 
     def __init__(self,data=[],database=databasename, credentials = credentialspath, columns = chosencolumns, categories = chosencategories):
         
@@ -35,6 +35,8 @@ class Sqldatabase():
             self.createdatabase()
     
     def createdatabase(self):
+
+        """Create the database <self.database> and connect to it | Should only be called by <self.connect>"""
 
         query = "CREATE DATABASE `{}`".format(self.database)
         cur = self.cnx.cursor()
@@ -89,39 +91,43 @@ class Sqldatabase():
 
         """ Returns a list of (<subcategories>,<Nb of occurences of the subcategorie>) among the products where categorie=<categorie> """
 
-        subcategories = []
-        subcategoriescount = []
+        subcat = []
+        subcatcount = []
 
         cur = self.cnx.cursor()
-        query = """SELECT categories FROM produits WHERE categorie = "{}" ;""".format(underscoretodash(categorie))
+        query = """SELECT categories FROM Products WHERE categorie = "{}";""".format(underscoretodash(categorie))
         cur.execute(query)
 
-        for categories in cur:
+        for cat in cur:
             
-            categories_temp = categories[0].split(", ")
+            cat_1 = cat[0].split(", ")
 
-            for i in range(len(categories_temp)):
-                if ":" in categories_temp[i]:
+            for i in range(len(cat_1)):
+                if not cat_1[i]:
+                    pass
+                elif ":" in cat_1[i]:
                     continue
-                elif "," in categories_temp[i]:
-                    categories_temp_2 = categories_temp[i].split(",")
-                    for j in range(len(categories_temp_2)):
-                        if categories_temp_2[j] in subcategories:
-                            subcategoriescount[subcategories.index(categories_temp_2[j])] = subcategoriescount[subcategories.index(categories_temp_2[j])] + 1
-                        elif detect(categories_temp_2[j])=="fr":
-                            subcategories.append(categories_temp_2[j])
-                            subcategoriescount.append(1)
-                elif categories_temp[i] in subcategories:
-                    subcategoriescount[subcategories.index(categories_temp[i])] = subcategoriescount[subcategories.index(categories_temp[i])] + 1 
-                elif detect(categories_temp[i])=="fr":
-                    subcategories.append(categories_temp[i])
-                    subcategoriescount.append(1)
-        
-        return [(subcategories[k],subcategoriescount[k]) for k in range(len(subcategories))]
+                elif "," in cat_1[i]:
+                    cat_2 = cat_1[i].split(",")
+                    for j in range(len(cat_2)):
+                        if not cat_2[j]:
+                            pass
+                        elif cat_2[j] in subcat:
+                            subcatcount[subcat.index(cat_2[j])] = subcatcount[subcat.index(cat_2[j])] + 1
+                        elif detect(cat_2[j])=="fr":
+                            subcat.append(cat_2[j])
+                            subcatcount.append(1)
+                elif cat_1[i] in subcat:
+                    subcatcount[subcat.index(cat_1[i])] = subcatcount[subcat.index(cat_1[i])] + 1 
+                elif detect(cat_1[i])=="fr":
+                    subcat.append(cat_1[i])
+                    subcatcount.append(1)
+
+        return [(subcat[k],subcatcount[k]) for k in range(len(subcat))]
     
     def createandfillcategoriestable(self):
 
-        """Create table `Categories` for each categorie in chosencategories - Fills them with every OFFCategorie among the products from the categorie"""
+        """Create table <Categories> and fills it with every <subcategories> (every categories provided by OFF for the product)"""
 
         query = "CREATE TABLE `Categories` ( `id` SMALLINT AUTO_INCREMENT, `subcategorie` VARCHAR({}), `count` SMALLINT, `maincategorie` VARCHAR({}), PRIMARY KEY(`id`))".format(varchar_length,varchar_length)
         cur = self.cnx.cursor()
@@ -143,13 +149,15 @@ class Sqldatabase():
     
     def createsubstitutetable(self):
         
-        table = "CREATE TABLE `Substitutes` ( `id` SMALLINT, PRIMARY KEY(`id`))".format(varchar_length)
+        query = "CREATE TABLE `Substitutes` ( `id` SMALLINT, PRIMARY KEY(`id`))"
         cur = self.cnx.cursor()
-        cur.execute(table)
+        cur.execute(query)
         self.cnx.commit()
         cur.close()
 
     def loaddata(self,data):
+
+        """reinitialize the whole database"""
 
         self.drop()
         self.connect()
@@ -178,7 +186,7 @@ class Sqldatabase():
         cur = self.cnx.cursor()
         cur.execute(query)
         pdt = [row for row in cur]
-        if pdt == []:
+        if not pdt:
             query = "INSERT INTO Substitutes (id) VALUES (%s)"
             cur = self.cnx.cursor()
             cur.execute(query,[id])
@@ -209,7 +217,7 @@ class Sqldatabase():
 
         """returns a list of subcategories name"""
         
-        query = "SELECT {} FROM Table_{}".format(dashtounderscore(categorie),dashtounderscore(categorie))
+        query = "SELECT subcategorie FROM Categories WHERE maincategorie = '{}'".format(dashtounderscore(categorie))
         cur = self.cnx.cursor()
         cur.execute(query)
         return [row[0] for row in cur]
