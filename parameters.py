@@ -1,8 +1,10 @@
 """changing the parameters here will affect the program as a whole"""
 
-chosencategories = ("boissons","plats-prepares","biscuits-et-gateaux","produits-a-tartiner-sucres","sauces")
-chosencolumns = ["product_name","generic_name","nutrition_grade_fr","stores","url","categories","categorie"]
-chosengrades = ("a","b")
+chosencategories = "boissons","plats-prepares","biscuits-et-gateaux","produits-a-tartiner-sucres","sauces"
+#product_name and generic_name MUST be part of chosencolumns with indexes 0 and 1, rest can be whatever field OFF provides
+chosencolumns = "product_name","generic_name","nutrition_grade_fr","url","categories","categorie"
+#other possible columns : "stores" (removed it as it was filled with binary data and therefore broke my code, hope OFF will fix that quick)
+chosengrades = "a","b"
 databasename = "openfooddata"
 #credentialspath is the json file storing the value for "host", "user" and "password" to access MySQL Database with privilege granted to {databasename}.*
 credentialspath = "/home/gery/Documents/OC/P5Global/credentials.json"

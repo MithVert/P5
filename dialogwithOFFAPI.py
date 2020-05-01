@@ -11,7 +11,6 @@ def getalldata(categories = chosencategories):
     for categorie in categories:
         a = Categorie(categorie).get()
         data = data + a
-    
     return data
 
 class   OpenfoodRequest():
@@ -70,7 +69,7 @@ class Categorie():
             before = time.time()
             rawdata = apiresponse
 
-            for idproduct in range (min(self.n,rawdata["count"])):
+            for idproduct in range (min(self.n,int(rawdata["count"]))):
 
                 self.data.append({})
 
