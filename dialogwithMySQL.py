@@ -232,3 +232,13 @@ class Sqldatabase():
         cur = self.cnx.cursor()
         cur.execute(query)
         return [row[0] for row in cur]
+    
+    def removesub(self,id):
+
+        """removes an id from Substitutes TABLE"""
+
+        query = "DELETE FROM Substitutes WHERE id = {}".format(id)
+        cur = self.cnx.cursor()
+        cur.execute(query)
+        self.cnx.commit()
+        cur.close()

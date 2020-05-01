@@ -25,8 +25,26 @@ if __name__=="__main__":
         userchoice = choice(["Consulter mes substituts","Chercher un nouveau substitut"])
 
         if userchoice[1] == "Consulter mes substituts":
-            #there is still work to be done for the people who are still alive
-            pass
+
+            print("Consultation des substituts")
+            substituts = sqldatabase.getsubstitutes()
+            listsubstituts = [i["product_name"] for i in substituts]
+
+            for j in range(len(listsubstituts)):
+                if not listsubstituts[j]:
+                    listsubstituts[j] = substituts[j]["generic_name"]
+            
+            subchoice = choice(listsubstituts)
+            sub = substituts[subchoice[0]]
+            print("Consultation d'un Substituts")
+            for i in chosencolumns :
+                print(i+":\n\t"+sub[i])
+            
+            subkeep = choice(["Conserver","Supprimer"])
+            if subkeep[1] == "Conserver":
+                pass
+            else:
+                sqldatabase.removesub(sub["id"])
 
         elif userchoice[1] == "Chercher un nouveau substitut":
 
