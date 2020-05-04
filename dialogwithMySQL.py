@@ -8,7 +8,7 @@ DetectorFactory.seed = 0
 
 class Sqldatabase():
 
-    """Class used to dialog with MySQL local database | only get-, insertsubstitute and loaddata methods should be called outside of the Class"""
+    """Class used to dialog with MySQL local database"""
 
     def __init__(self,data=[],database=databasename, credentials = credentialspath, columns = chosencolumns, categories = chosencategories):
         
@@ -22,7 +22,7 @@ class Sqldatabase():
         self.credentials = json.load(open(credentials,"r"))
         self.cnx = None
         self.categories = categories
-    
+
     def connect(self):
 
         """Connect to self.database, if self.database doesn't exist, create it before connecting"""
@@ -50,23 +50,47 @@ class Sqldatabase():
         """Close the connexion to MySQL server"""
 
         self.cnx.close()
+    
+    def loaddata(self,data):
+
+        """Constructor to restart with a brand-new database"""
+
+        self.drop()
+        self.connect()
+        self.data = data
+        self.createglobaltable()
+        self.insertdataintoglobaltable()
+        self.createandfillcategoriestable()
+        self.createsubstitutetable()
+    
+    def drop(self):
+
+        """Delete the local database <self.database> | should only be called by self.loadata()"""
+
+        if self.cnx:
+            pass
+        else:
+            self.connect()
+        
+        cur = self.cnx.cursor()
+        query = "DROP DATABASE {}".format(self.database)
+        cur.execute(query)
 
     def createglobaltable(self):
 
-        """Create the global table <Products> where every product is referenced"""
+        """Create the global table <Products> where every product is referenced | should only be called by self.loaddata()"""
         
         table = "CREATE TABLE `Products` ( `id` SMALLINT AUTO_INCREMENT, "
 
         for s in self.columns:
             table = table + "`{}` VARCHAR({}), ".format(s,varchar_length)
-        table = table + "PRIMARY KEY(`id`)) ENGINE=InnoDB;"
+        table = table + "PRIMARY KEY(`id`)) CHARACTER SET=utf8mb4 ENGINE=InnoDB;"
         cur = self.cnx.cursor()
         cur.execute(table)
         
-
     def insertdataintoglobaltable(self):
 
-        """Saves <self.data> in the global table <Products> in MySQL"""
+        """Saves <self.data> in the global table <Products> in MySQL | should only be called by self.loaddata()"""
 
         cur = self.cnx.cursor()
 
@@ -87,9 +111,35 @@ class Sqldatabase():
         cur.close()
         print("Done")
     
+    def createandfillcategoriestable(self):
+
+        """Create table <Categories> and fills it with every <subcategories> (every categories provided by OFF for the product) | should only be called by self.loaddata()"""
+
+        print("Sorting data :\t",end="\n\t\t\t\t\t")
+
+        query = "CREATE TABLE `Categories` ( `id` SMALLINT AUTO_INCREMENT, `subcategorie` VARCHAR({}), `count` SMALLINT, `maincategorie` VARCHAR({}), PRIMARY KEY(`id`)) CHARACTER SET=utf8mb4 ENGINE=InnoDB;".format(varchar_length,varchar_length)
+        cur = self.cnx.cursor()
+        cur.execute(query)
+        
+        for categorie in self.categories:
+
+            categorie = dashtounderscore(categorie)
+            datatoinsert = self.listingsubcategories(categorie)
+
+            for data in datatoinsert:
+                
+                query = "INSERT INTO Categories (subcategorie, count, maincategorie) VALUES (%s,%s,%s)"
+                data = [data[0][:varchar_length],data[1],categorie]
+                cur = self.cnx.cursor()
+                cur.execute(query,data)
+                self.cnx.commit()
+                cur.close()
+        
+        print("Done")
+
     def listingsubcategories(self, categorie):
 
-        """ Returns a list of (<subcategories>,<Nb of occurences of the subcategorie>) among the products where categorie=<categorie> """
+        """ Returns a list of (<subcategories>,<Nb of occurences of the subcategorie>) among the products where categorie=<categorie> | should only be called by self.createandfillcategoriestable()"""
 
         subcat = []
         subcatcount = []
@@ -125,58 +175,15 @@ class Sqldatabase():
 
         return [(subcat[k],subcatcount[k]) for k in range(len(subcat))]
     
-    def createandfillcategoriestable(self):
-
-        """Create table <Categories> and fills it with every <subcategories> (every categories provided by OFF for the product)"""
-
-        query = "CREATE TABLE `Categories` ( `id` SMALLINT AUTO_INCREMENT, `subcategorie` VARCHAR({}), `count` SMALLINT, `maincategorie` VARCHAR({}), PRIMARY KEY(`id`))".format(varchar_length,varchar_length)
-        cur = self.cnx.cursor()
-        cur.execute(query)
-        
-        for categorie in self.categories:
-
-            categorie = dashtounderscore(categorie)
-            datatoinsert = self.listingsubcategories(categorie)
-
-            for data in datatoinsert:
-                
-                query = "INSERT INTO Categories (subcategorie, count, maincategorie) VALUES (%s,%s,%s)"
-                data = [data[0][:varchar_length],data[1],categorie]
-                cur = self.cnx.cursor()
-                cur.execute(query,data)
-                self.cnx.commit()
-                cur.close()
-    
     def createsubstitutetable(self):
+
+        """Creates <Substitutes> Table | should only be called by self.loaddata()"""
         
         query = "CREATE TABLE `Substitutes` ( `id` SMALLINT, PRIMARY KEY(`id`))"
         cur = self.cnx.cursor()
         cur.execute(query)
         self.cnx.commit()
         cur.close()
-
-    def loaddata(self,data):
-
-        """reinitialize the whole database"""
-
-        self.drop()
-        self.connect()
-        self.data = data
-        self.createglobaltable()
-        self.insertdataintoglobaltable()
-        self.createandfillcategoriestable()
-        self.createsubstitutetable()
-    
-    def drop(self):
-
-        if self.cnx:
-            pass
-        else:
-            self.connect()
-        
-        cur = self.cnx.cursor()
-        query = "DROP DATABASE {}".format(self.database)
-        cur.execute(query)
     
     def insertsubstitute(self,id):
 
@@ -226,7 +233,7 @@ class Sqldatabase():
 
         """returns a list of product id with the said subcategories"""
 
-        query = "SELECT id FROM Products WHERE (categorie = '{}')".format(categorie)
+        query = "SELECT id FROM Products WHERE categorie = '{}'".format(categorie)
         for subcat in listofsubcategories:
             query = query + "AND (categories REGEXP '.*({}).*')".format(subcat)
         cur = self.cnx.cursor()

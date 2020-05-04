@@ -34,7 +34,9 @@ if __name__=="__main__":
                 if not listsubstituts[j]:
                     listsubstituts[j] = substituts[j]["generic_name"]
             
-            subchoice = choice(listsubstituts)
+            subchoice = choice(listsubstituts+["Quitter"])
+            if subchoice[1] == "Quitter":
+                break
             sub = substituts[subchoice[0]]
             print("Consultation d'un Substituts")
             for i in chosencolumns :
@@ -52,7 +54,7 @@ if __name__=="__main__":
             userchoicecategorie = choice(chosencategories)
             print("Recherche d'un nouveau substitut : choix de la sous-categorie")
             userchoicesubcategorie = choice(sqldatabase.getcategorielist(userchoicecategorie[1]))
-            productlist = sqldatabase.getlistofproducts(userchoicecategorie[1],userchoicesubcategorie[1])
+            productlist = sqldatabase.getlistofproducts(userchoicecategorie[1],[userchoicesubcategorie[1]])
             productlistname = []
             for j in productlist:
                 i = sqldatabase.getproductinfo(j)
@@ -63,5 +65,5 @@ if __name__=="__main__":
             usersubstitutechoice = choice(productlistname)
             sqldatabase.insertsubstitute(productlist[usersubstitutechoice[0]])
             print("Produit ajouté à vos substituts")
-
+    sqldatabase.disconnect()
     print("Au Revoir")

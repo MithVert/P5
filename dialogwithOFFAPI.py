@@ -78,8 +78,6 @@ class Categorie():
                     try:
                         if column == "categorie":
                             self.data[compting][column] = self.name
-                        elif column == "categories":
-                            self.data[compting][column] = rawdata["products"][idproduct][column][:varchar_length]
                         else:
                             self.data[compting][column] = rawdata["products"][idproduct][column][:varchar_length]
                     except KeyError:
