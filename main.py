@@ -3,26 +3,31 @@ from dialogwithMySQL import *
 from dialogwithOFFAPI import *
 from interface import *
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
     while True:
 
         print("Bienvenue sur notre application pour manger plus saînement")
         print("Souhaitez-vous")
-        userchoice = choice(["Réinitialiser les Bases de Données", "Continuer avec les données enregistrées", "Quitter"])
+        userchoice = choice(
+            ["Réinitialiser les Bases de Données",
+                "Continuer avec les données enregistrées",
+                "Quitter"])
 
         if userchoice[1] == "Réinitialiser les Bases de Données":
             sqldatabase = Sqldatabase()
             sqldatabase.loaddata(getalldata())
-        
+
         elif userchoice[1] == "Continuer avec les données enregistrées":
             sqldatabase = Sqldatabase()
             sqldatabase.connect()
-        
+
         elif userchoice[1] == "Quitter":
             break
 
-        userchoice = choice(["Consulter mes substituts","Chercher un nouveau substitut"])
+        userchoice = choice(
+            ["Consulter mes substituts",
+                "Chercher un nouveau substitut"])
 
         if userchoice[1] == "Consulter mes substituts":
 
@@ -33,16 +38,16 @@ if __name__=="__main__":
             for j in range(len(listsubstituts)):
                 if not listsubstituts[j]:
                     listsubstituts[j] = substituts[j]["generic_name"]
-            
+
             subchoice = choice(listsubstituts+["Quitter"])
             if subchoice[1] == "Quitter":
                 break
             sub = substituts[subchoice[0]]
             print("Consultation d'un Substituts")
-            for i in chosencolumns :
+            for i in chosencolumns:
                 print(i+":\n\t"+sub[i])
-            
-            subkeep = choice(["Conserver","Supprimer"])
+
+            subkeep = choice(["Conserver", "Supprimer"])
             if subkeep[1] == "Conserver":
                 pass
             else:
@@ -50,11 +55,18 @@ if __name__=="__main__":
 
         elif userchoice[1] == "Chercher un nouveau substitut":
 
-            print("Recherche d'un nouveau substitut : choix de la categorie")
+            print(
+                "Recherche d'un nouveau substitut: choix de la categorie")
             userchoicecategorie = choice(chosencategories)
-            print("Recherche d'un nouveau substitut : choix de la sous-categorie")
-            userchoicesubcategorie = choice(sqldatabase.getcategorielist(userchoicecategorie[1]))
-            productlist = sqldatabase.getlistofproducts(userchoicecategorie[1],[userchoicesubcategorie[1]])
+            print(
+                "Recherche d'un nouveau substitut: choix de la sous-categorie")
+            userchoicesubcategorie = choice(
+                sqldatabase.getcategorielist(userchoicecategorie[1])
+            )
+            productlist = sqldatabase.getlistofproducts(
+                userchoicecategorie[1],
+                [userchoicesubcategorie[1]]
+            )
             productlistname = []
             for j in productlist:
                 i = sqldatabase.getproductinfo(j)

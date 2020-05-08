@@ -1,3 +1,6 @@
+"""a few utility fonctions"""
+
+
 def dashtounderscore(string):
     string_temp = ""
     for i in string:
@@ -6,6 +9,7 @@ def dashtounderscore(string):
         else:
             string_temp = string_temp + i
     return string_temp
+
 
 def underscoretodash(string):
     string_temp = ""
