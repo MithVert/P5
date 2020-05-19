@@ -1,6 +1,8 @@
-# Finding substitutes app for "Pur Beurre"
+# Project Title
 
-This app aim at helping people find healthier products by using OpenFoodFact Database.
+This app aim at helping people find healthier products.
+It imports its data from OpenFoodFact which is mostly referred to as OFF in the
+code.
 
 ## Getting Started
 
@@ -22,7 +24,9 @@ sudo apt-get install python3
 For other systems download and install the corresponding package from :
 https://www.python.org/downloads/
 
+
 To install every library listed in requirements.txt
+
 you can use pip in command line:
 pip3 install <library>
 
@@ -33,9 +37,11 @@ pip3 freeze
 
 ### Running
 
-Run main.py with python3 and then follow the instructions the app will give you
+Run main.py with python3 and then follow the instructions the app will give you.
 You may modify parameters.py beforehand while following the instructions given
 in comments if you want to adjust the app to your needs.
+At launch the app will ask wether you want to restart from scratch and reload
+every data. It is advised not to do so unless you run it for the first time.
 
 ```
 For instance through command line:
@@ -53,6 +59,6 @@ I don't allow external contributions for now.
 
 ## Acknowledgments
 
-* to my mentor Rygel Louv who kept helping me out
-* to Thierry Chappuis whose webinairs and answers were of great use
-* to Seb Declercq whose explanations were appreciated
+* To my mentor Rygel Louv who kept helping me out
+* To Thierry Chappuis whose webinairs and answers were of great use
+* To Seb Declercq whose explanations were appreciated
