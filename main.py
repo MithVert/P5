@@ -1,9 +1,10 @@
-from parameters import *
-from dialogwithMySQL import *
-from dialogwithOFFAPI import *
-from interface import *
+from parameters import CHOSENCATEGORIES, CHOSENCOLUMNS
+from dialogwithMySQL import Sqldatabase
+from dialogwithOFFAPI import getalldata
+from interface import choice
 
-if __name__ == "__main__":
+
+def main():
 
     while True:
 
@@ -44,7 +45,7 @@ if __name__ == "__main__":
                 break
             sub = substituts[subchoice[0]]
             print("Consultation d'un Substituts")
-            for i in chosencolumns:
+            for i in CHOSENCOLUMNS:
                 print(i+":\n\t"+sub[i])
 
             subkeep = choice(["Conserver", "Supprimer"])
@@ -57,7 +58,7 @@ if __name__ == "__main__":
 
             print(
                 "Recherche d'un nouveau substitut: choix de la categorie")
-            userchoicecategorie = choice(chosencategories)
+            userchoicecategorie = choice(CHOSENCATEGORIES)
             print(
                 "Recherche d'un nouveau substitut: choix de la sous-categorie")
             userchoicesubcategorie = choice(
@@ -79,3 +80,7 @@ if __name__ == "__main__":
             print("Produit ajouté à vos substituts")
     sqldatabase.disconnect()
     print("Au Revoir")
+
+
+if __name__ == "__main__":
+    main()
