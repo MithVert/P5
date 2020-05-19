@@ -1,4 +1,4 @@
-# Project Title
+# Finding substitutes app for "Pur Beurre"
 
 This app aim at helping people find healthier products by using OpenFoodFact Database.
 
@@ -53,6 +53,6 @@ I don't allow external contributions for now.
 
 ## Acknowledgments
 
-* Hat tip to my mentor Rygel Louv,
-* to Thierry Chappuis whose webinairs and answers were of great use,
-* to Seb Declercq whose explanations were appreciated.
+* to my mentor Rygel Louv who kept helping me out
+* to Thierry Chappuis whose webinairs and answers were of great use
+* to Seb Declercq whose explanations were appreciated
