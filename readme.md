@@ -1,4 +1,4 @@
-# Project Title
+# "Pur Beurre"'s App to find healthier food
 
 This app aim at helping people find healthier products.
 It imports its data from OpenFoodFact which is mostly referred to as OFF in the
