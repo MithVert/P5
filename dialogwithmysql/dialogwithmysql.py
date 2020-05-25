@@ -1,3 +1,5 @@
+"""to be deleted"""
+
 import mysql.connector
 import json
 from langdetect import detect, DetectorFactory
