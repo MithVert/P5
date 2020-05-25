@@ -35,6 +35,15 @@ with this command:
 pip3 freeze
 ```
 
+You also need to install MySQL before running the app and make sure to have a
+credentials.json file containing in a dictionnary :
+"host" : "openfooddatahost"
+"user" : "username"
+"password" : "userpassword"
+Where the user has privileges on openfooddata.* in MySQL
+I you want, to can use a different databasename than openfooddata.
+To do so make sure to change DATABASENAME in parameters.py
+
 ### Running
 
 Run main.py with python3 and then follow the instructions the app will give you.
@@ -48,6 +57,8 @@ For instance through command line:
 python3 main.py
 ```
 
+Make sure you launch the app from its root which is the "P5" folder
+
 ## Contributing
 
 As this is a project which is part of my studies,
@@ -60,5 +71,5 @@ I don't allow external contributions for now.
 ## Acknowledgments
 
 * To my mentor Rygel Louv who kept helping me out
-* To Thierry Chappuis whose webinairs and answers were of great use
+* To Thierry Chappuis whose webinars and answers were of great use
 * To Seb Declercq whose explanations were appreciated
