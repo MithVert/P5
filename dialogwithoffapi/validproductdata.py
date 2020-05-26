@@ -76,4 +76,4 @@ class Validproductdata():
         if self.validatename():
             return self.validatecategories()
         else:
-            return False, self.product
+            return False, None

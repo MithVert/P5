@@ -29,7 +29,7 @@ class Importoffdata():
                 )
                 self.data = (
                     self.data
-                    + Openfoodrequest(categorie, grade).get()['products']
+                    + Openfoodrequest(categorie, grade).get()
                 )
                 after = time.time()
 

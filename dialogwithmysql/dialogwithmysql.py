@@ -35,6 +35,8 @@ class Sqldatabase():
 
     def connect(self):
 
+        """transfered to sqldatabasemanager"""
+
         """Connect to self.database
         If self.database doesn't exist, create it before connecting"""
 
@@ -48,6 +50,8 @@ class Sqldatabase():
 
     def createdatabase(self):
 
+        """transfered to sqldatabasemanager"""
+
         """Create the database <self.database> and connect to it
         Should only be called by <self.connect>"""
 
@@ -60,11 +64,15 @@ class Sqldatabase():
 
     def disconnect(self):
 
+        """transfered to sqldatabasemanager"""
+
         """Close the connexion to MySQL server"""
 
         self.cnx.close()
 
     def loaddata(self, data):
+
+        """yet to transfer to sqldatabasemanager"""
 
         """Constructor to restart with a brand-new database"""
 
@@ -92,6 +100,8 @@ class Sqldatabase():
 
     def createglobaltable(self):
 
+        """yet to transfer to productsmanager"""
+
         """Create the global table <Products> where every product is referenced
         Should only be called by self.loaddata()"""
 
@@ -108,6 +118,8 @@ class Sqldatabase():
         cur.execute(table)
 
     def insertdataintoglobaltable(self):
+
+        """yet to transfer to productmanager"""
 
         """Saves <self.data> in the global table <Products> in MySQL
         Should only be called by self.loaddata()"""
@@ -132,6 +144,8 @@ class Sqldatabase():
         print("Done")
 
     def createandfillcategoriestable(self):
+
+        """yet to transfer to categoriesmanager"""
 
         """Create table <Categories> and fills it with every <subcategories>
         categorie = every selected categorie in chosencategories
@@ -173,6 +187,8 @@ class Sqldatabase():
         print("Done")
 
     def listingsubcategories(self, categorie):
+
+        """to be transfered to categoriemanager"""
 
         """ Returns a list of
         (<subcategories>,<Nb of occurences of the subcategorie>)
@@ -222,6 +238,8 @@ class Sqldatabase():
 
     def createsubstitutetable(self):
 
+        """to be transfered to productmanager"""
+
         """Creates <Substitutes> Table
         Should only be called by self.loaddata()"""
 
@@ -235,6 +253,8 @@ class Sqldatabase():
         cur.close()
 
     def insertsubstitute(self, id):
+
+        """to be transfered to product"""
 
         """Insert the specified id in Substitutes Table"""
 
@@ -253,6 +273,8 @@ class Sqldatabase():
 
     def getsubstitutes(self):
 
+        """to be transfered to productmanager"""
+
         """returns a list of dictionnaries,
         each dictionnary containing every info on the product"""
 
@@ -266,6 +288,8 @@ class Sqldatabase():
 
     def getproductinfo(self, id):
 
+        """to be transfered to product manager"""
+
         """returns a dictionnary containing every info on the product"""
 
         query = (
@@ -277,6 +301,8 @@ class Sqldatabase():
         return [row for row in cur][0]
 
     def getcategorielist(self, categorie):
+
+        """to be transfered to categoriesmanager or maincategorie"""
 
         """returns a list of subcategories name"""
 
@@ -303,6 +329,8 @@ class Sqldatabase():
         return [row[0] for row in cur]
 
     def removesub(self, id):
+
+        """to be transfered to product"""
 
         """removes an id from Substitutes TABLE"""
 

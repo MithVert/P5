@@ -1,6 +1,7 @@
 import mysql.connector
 import json
-from parameters import CREDENTIALSPATH, DATABASENAME
+from parameters import CREDENTIALSPATH, DATABASENAME, CHOSENCOLUMNS
+from product import Product
 
 
 class Sqldatabasemanager():
@@ -31,8 +32,22 @@ class Sqldatabasemanager():
         cur = self.cnx.cursor()
         cur.execute(query)
         self.cnx.commit()
+
+        query = (
+            "CREATE TABLE `Products` ( `id` SMALLINT AUTO_INCREMENT, "
+        )
         self.cnx.close()
         self.connect()
+
+    def createtableproduct(self):
+
+        """Create the table Products"""
+
+        query = "CREATE TABLE `Products` ( `id` SMALLINT AUTO_INCREMENT, "
+        for column in CHOSENCOLUMNS:
+            if query:  # to be deleted
+                pass
+            # work to be done
 
     def disconnect(self):
 
@@ -41,7 +56,7 @@ class Sqldatabasemanager():
     def drop(self):
 
         """Delete the local database <self.database>
-        Should only be called by self.loaddata()"""
+        Should only be called by self.load()"""
 
         if self.cnx:
             pass
@@ -55,3 +70,14 @@ class Sqldatabasemanager():
     def load(self, data):
 
         """load all the data to the MySQL Database"""
+
+        self.drop()
+        self.connect()
+
+        print("Saving data to MySQL :\t", end="\n\t\t\t\t\t")
+
+        for productdata in data:
+            product = Product(productdata, self)
+            product.insertintable()
+
+        print("Done")

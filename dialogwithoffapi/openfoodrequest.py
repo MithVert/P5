@@ -12,33 +12,34 @@ class Openfoodrequest():
         """creating the url so we ask for N products
         from <categorie> with nutrition <grade> in .json"""
 
-        self.url1 = (
+        url1 = (
             "https://fr.openfoodfacts.org"
             "/cgi/search.pl?action=process&"
             "tagtype_0=categories&tag_contains_0=contains&tag_0="
         )
-        self.url2 = (
+        url2 = (
             "&tagtype_1=nutrition_grade_fr&"
             "tag_contains_1=contains&tag_1="
         )
-        self.url3 = "&page_size="+str(N)+"&json=True"
-        self.url4 = "&fields="
+        url3 = "&page_size="+str(N)+"&json=True"
+        url4 = "&fields="
         for i in CHOSENCOLUMNS:
             if i == "categorie":
                 continue
             else:
-                self.url4 = self.url4+i+","
-        self.url4 = self.url4[:-1]
+                url4 = url4+i+","
+        url4 = url4[:-1]
         self.url = (
-            self.url1 + str(categorie)
-            + self.url2 + str(grade)
-            + self.url3
-            + self.url4
+            url1 + str(categorie)
+            + url2 + str(grade)
+            + url3
+            + url4
         )
         self.headers = {
             'User-Agent': 'OpenclassroomP5 - Unix - Version 2'
         }
         self.payload = {}
+        self.categorie = categorie
 
     def get(self):
 
@@ -46,14 +47,20 @@ class Openfoodrequest():
         returns a json file
         raises ValueError if request fails"""
 
-        self.apiresponse = requests.request(
+        apiresponse = requests.request(
             "GET", self.url, headers=self.headers,
             data=self.payload
         )
 
-        if self.apiresponse.ok:
+        if apiresponse.ok:
 
-            return self.apiresponse.json()
+            returneddata = apiresponse.json()["products"]
+
+            for productdata in returneddata:
+
+                productdata["maincategorie"] = self.categorie
+
+            return returneddata
 
         else:
 
