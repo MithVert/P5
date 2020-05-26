@@ -37,12 +37,14 @@ pip3 freeze
 
 You also need to install MySQL before running the app and make sure to have a
 credentials.json file containing in a dictionnary :
+```
 "host" : "openfooddatahost"
 "user" : "username"
 "password" : "userpassword"
-Where the user has privileges on openfooddata.* in MySQL
-I you want, to can use a different databasename than openfooddata.
-To do so make sure to change DATABASENAME in parameters.py
+```
+Where the user has privileges on openfooddata.* in MySQL.
+If you want, you can use a different databasename than openfooddata.
+To do so make sure to change DATABASENAME in parameters.py.
 
 ### Running
 

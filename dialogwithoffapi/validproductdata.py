@@ -35,7 +35,7 @@ class Validproductdata():
         and making a proper list of categories out of a string"""
 
         hasbeencut = False
-        if len(self.product["categories"]) == VARCHARLENGHT:
+        if len(self.product["categories"]) >= VARCHARLENGHT:
             hasbeencut = True
 
         listofcategories = self.product["categories"].split(",")
