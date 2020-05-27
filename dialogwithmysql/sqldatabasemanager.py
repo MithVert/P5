@@ -1,7 +1,8 @@
 import mysql.connector
 import json
-from parameters import CREDENTIALSPATH, DATABASENAME, CHOSENCOLUMNS
-from product import Product
+from parameters import (
+    CREDENTIALSPATH, DATABASENAME, CHOSENCOLUMNS, VARCHARLENGHT
+)
 
 
 class Sqldatabasemanager():
@@ -9,6 +10,7 @@ class Sqldatabasemanager():
     def __init__(self):
 
         self.credentials = json.load(open(CREDENTIALSPATH, "r"))
+        self.cnx = None
 
     def connect(self):
 
@@ -32,22 +34,84 @@ class Sqldatabasemanager():
         cur = self.cnx.cursor()
         cur.execute(query)
         self.cnx.commit()
+        query = f"USE {DATABASENAME};"
+        cur = self.cnx.cursor()
+        cur.execute(query)
+        self.cnx.commit()
 
-        query = (
+        self.createtableproducts()
+        self.createtablesubstitutes()
+        self.createtablecategories()
+        self.createtablerelations()
+
+    def createtableproducts(self):
+
+        """Create the global table <Products> where every product is referenced
+        Should only be called by self.createdatabase()"""
+
+        table = (
             "CREATE TABLE `Products` ( `id` SMALLINT AUTO_INCREMENT, "
+            "`idmaincat` SMALLINT, "
         )
-        self.cnx.close()
-        self.connect()
 
-    def createtableproduct(self):
+        for s in CHOSENCOLUMNS:
 
-        """Create the table Products"""
+            table = (
+                table + f"`{s}` VARCHAR({VARCHARLENGHT}), "
+            )
 
-        query = "CREATE TABLE `Products` ( `id` SMALLINT AUTO_INCREMENT, "
-        for column in CHOSENCOLUMNS:
-            if query:  # to be deleted
-                pass
-            # work to be done
+        table = (
+            table
+            + "PRIMARY KEY(`id`)) CHARACTER SET=utf8mb4 ENGINE=InnoDB;"
+        )
+        cur = self.cnx.cursor()
+        cur.execute(table)
+        self.cnx.commit()
+
+    def createtablesubstitutes(self):
+
+        """Create the <Substitutes> table where every substitue id is referenced
+        Should only be called by self.createdatabase()"""
+
+        table = (
+            "CREATE TABLE `Substitutes` ( `idp` SMALLINT, "
+            "FOREIGN KEY(`idp`) REFERENCES `Products`(`id`), "
+            "PRIMARY KEY(`idp`)) CHARACTER SET=utf8mb4 ENGINE=InnoDB;"
+        )
+        cur = self.cnx.cursor()
+        cur.execute(table)
+        self.cnx.commit()
+
+    def createtablecategories(self):
+
+        """Create the <Categories> table
+        where every categorie is referenceded
+        Should only be called by self.createdatabase"""
+
+        table = (
+            "CREATE TABLE `Categories` ( `id` SMALLINT, "
+            f"`Categorie` VARCHAR({VARCHARLENGHT}), "
+            "PRIMARY KEY(`id`)) CHARACTER SET=utf8mb4 ENGINE=InnoDB;"
+        )
+        cur = self.cnx.cursor()
+        cur.execute(table)
+        self.cnx.commit()
+
+    def createtablerelations(self):
+
+        """Create the <Relations> table where we link the products
+        to the categorie(s) they have"""
+
+        table = (
+            "CREATE TABLE `Relations` ( `idp` SMALLINT, `idc` SMALLINT, "
+            "FOREIGN KEY (`idp`) REFERENCES Products(`id`), "
+            "FOREIGN KEY (`idp`) REFERENCES Products(`id`), "
+            "PRIMARY KEY (`idp`,`idc`)) "
+            "CHARACTER SET=utf8mb4 ENGINE=InnoDB;"
+        )
+        cur = self.cnx.cursor()
+        cur.execute(table)
+        self.cnx.commit()
 
     def disconnect(self):
 
@@ -66,18 +130,3 @@ class Sqldatabasemanager():
         cur = self.cnx.cursor()
         query = f"DROP DATABASE {DATABASENAME}"
         cur.execute(query)
-
-    def load(self, data):
-
-        """load all the data to the MySQL Database"""
-
-        self.drop()
-        self.connect()
-
-        print("Saving data to MySQL :\t", end="\n\t\t\t\t\t")
-
-        for productdata in data:
-            product = Product(productdata, self)
-            product.insertintable()
-
-        print("Done")
