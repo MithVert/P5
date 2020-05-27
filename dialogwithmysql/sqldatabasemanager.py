@@ -7,6 +7,10 @@ from parameters import (
 
 class Sqldatabasemanager():
 
+    """Class used to dialog with MySQL, it establishes the connection to MySQL
+    and, if necessary, it creates the database back from scratch.
+    You can get the connexion to MySQL it sets up by getting self.cnx"""
+
     def __init__(self):
 
         self.credentials = json.load(open(CREDENTIALSPATH, "r"))
@@ -28,7 +32,7 @@ class Sqldatabasemanager():
     def createdatabase(self):
 
         """Create the database DATABASENAME and connect to it
-        Should only be called by <self.connect>"""
+        Should only be called by self.connect()"""
 
         query = f"CREATE DATABASE `{DATABASENAME}`"
         cur = self.cnx.cursor()
@@ -46,7 +50,7 @@ class Sqldatabasemanager():
 
     def createtableproducts(self):
 
-        """Create the global table <Products> where every product is referenced
+        """Create the table <Products> where every product is referenced
         Should only be called by self.createdatabase()"""
 
         table = (
@@ -86,7 +90,7 @@ class Sqldatabasemanager():
 
         """Create the <Categories> table
         where every categorie is referenceded
-        Should only be called by self.createdatabase"""
+        Should only be called by self.createdatabase()"""
 
         table = (
             "CREATE TABLE `Categories` ( `id` SMALLINT, "
@@ -119,8 +123,8 @@ class Sqldatabasemanager():
 
     def drop(self):
 
-        """Delete the local database <self.database>
-        Should only be called by self.load()"""
+        """Delete the local database DATABASENAME
+        Use with cautious"""
 
         if self.cnx:
             pass
