@@ -77,3 +77,7 @@ class Product():
         cur = self.sqlmng.cnx.cursor()
         cur.execute(query)
         self.sqlmng.cnx.commit()
+
+    def getinfo(self):
+
+        return self.data

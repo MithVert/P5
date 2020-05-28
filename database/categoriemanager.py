@@ -14,4 +14,18 @@ class Categoriemanager():
                 categorie.updaterelation(product)
 
     def getcategories(self, maincategorie):
-        pass
+
+        query = (
+            "SELECT DISTINCT Categories.id, "
+            "Categories.categorie FROM Categories "
+            "INNER JOIN Relations "
+            "ON Categories.id = Relations.idc "
+            "INNER JOIN Products "
+            "ON Products.id = Relations.idp "
+            f"WHERE Products.categorie = '{maincategorie}'"
+        )
+
+        cur = self.sqlmng.cnx.cursor(dictionary=True)
+        cur.execute(query)
+
+        return [row for row in cur]

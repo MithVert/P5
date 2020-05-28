@@ -1,5 +1,7 @@
 import mysql.connector
 import json
+from api.importoffdata import Importoffdata
+from database.productmanager import Productmanager
 from parameters import (
     CREDENTIALSPATH, DATABASENAME, CHOSENCOLUMNS, VARCHARLENGHT
 )
@@ -133,3 +135,14 @@ class Sqldatabasemanager():
         cur = self.cnx.cursor()
         query = f"DROP DATABASE {DATABASENAME}"
         cur.execute(query)
+
+    def reload(self):
+
+        importing = Importoffdata()
+        importing.getdataset()
+        importing.cleanupdata()
+        self.connect()
+        self.drop()
+        self.connect()
+        pdtmng = Productmanager(self)
+        pdtmng.insertproducts(importing.cleanedupdata)
