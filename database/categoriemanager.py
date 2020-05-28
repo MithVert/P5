@@ -1,4 +1,4 @@
-from dialogwithmysql.categorie import Categorie
+from model.categorie import Categorie
 
 
 class Categoriemanager():
@@ -10,7 +10,8 @@ class Categoriemanager():
         for categoriename in product.data["categories"]:
             categorie = Categorie(self.sqlmng, name=categoriename)
             categorie.update()
-            categorie.updaterelation(product)
+            if categorie.valid:
+                categorie.updaterelation(product)
 
     def getcategories(self, maincategorie):
         pass

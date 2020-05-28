@@ -1,4 +1,5 @@
-from parameters import CHOSENCATEGORIESNAME
+from parameters import CHOSENCATEGORIESNAME, VARCHARLENGHT
+import mysql.connector
 
 
 class Product():
@@ -18,23 +19,35 @@ class Product():
         for column in self.data:
             columnliststr = columnliststr + column + ", "
             valuesstr = valuesstr + "%s, "
-            if column == "Categorie":
+            if column == "categorie":
                 valuestuple = (
                     valuestuple
-                    + (CHOSENCATEGORIESNAME[self.data[columnliststr]],)
+                    + (CHOSENCATEGORIESNAME[self.data[column]],)
                 )
+            elif column == "categories":
+                valuetemp = str(self.data[column])[1:-1]
+                if len(valuetemp) > VARCHARLENGHT:
+                    valuetemp = valuetemp[:VARCHARLENGHT]
+                valuestuple = valuestuple + (valuetemp,)
             else:
                 valuestuple = valuestuple + (self.data[column],)
         columnliststr = columnliststr[:-2]
         valuesstr = valuesstr[:-2]
+        valuesstr
         query = (
             f"INSERT INTO Products ({columnliststr})"
             f"VALUES ({valuesstr});"
         )
         cur = self.sqlmng.cnx.cursor()
-        cur.execute(query, valuestuple)
-        self.sqlmng.cnx.commit()
-        self.id = cur.lastrowid
+        try:
+            cur.execute(query, valuestuple)
+            self.sqlmng.cnx.commit()
+            self.id = cur.lastrowid
+        except mysql.connector.errors.ProgrammingError:
+            # sometimes data have characters which interfere with MySQL Syntax
+            # as for every product which isn't well configured, we just ignore
+            # them
+            pass
 
     def loadproduct(self):
 

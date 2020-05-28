@@ -1,7 +1,7 @@
 import time
 from parameters import CHOSENCATEGORIES, CHOSENGRADES
-from dialogwithoffapi.openfoodrequest import Openfoodrequest
-from dialogwithoffapi.validproductdata import Validproductdata
+from api.openfoodrequest import Openfoodrequest
+from api.validproductdata import Validproductdata
 
 
 class Importoffdata():
@@ -46,7 +46,7 @@ class Importoffdata():
 
         if not(self.data):
             self.getdataset()
-        print("Cleaning Dataset", end="\n\t\t\t\t\t")
+        print("Cleaning data", end="\n\t\t\t\t\t")
         for product in self.data:
             isvalid, cleanproduct = Validproductdata(product).check()
             if isvalid:

@@ -1,3 +1,5 @@
+import mysql.connector
+
 
 class Categorie():
 
@@ -5,25 +7,30 @@ class Categorie():
         self.sqlmng = sqlmng
         self.id = idc
         self.name = name
+        self.valid = True
 
     def update(self):
         query = (
             "SELECT id, Categorie FROM Categories "
             f"WHERE Categorie = '{self.name}'"
         )
-        cur = self.sqlmng.cnx.cursor(dictionary=True)
-        cur.execute(query)
-        result = [row for row in cur]
+        try:
+            cur = self.sqlmng.cnx.cursor(dictionary=True)
+            cur.execute(query)
+            result = [row for row in cur]
+        except mysql.connector.errors.ProgrammingError:
+            self.valid = False
+            result = True
         if not result:
             query = (
-                "INSERT INTO Categories VALUES (%s)"
+                "INSERT INTO Categories (Categorie) VALUES (%s)"
             )
             value = (self.name,)
             cur = self.sqlmng.cnx.cursor()
             cur.execute(query, value)
             self.sqlmng.cnx.commit()
             self.id = cur.lastrowid
-        else:
+        elif self.valid:
             self.id = result[0]["id"]
 
     def updaterelation(self, product):

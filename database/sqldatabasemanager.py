@@ -92,7 +92,7 @@ class Sqldatabasemanager():
         Should only be called by self.createdatabase()"""
 
         table = (
-            "CREATE TABLE `Categories` ( `id` SMALLINT, "
+            "CREATE TABLE `Categories` ( `id` SMALLINT AUTO_INCREMENT, "
             f"`Categorie` VARCHAR({VARCHARLENGHT}), "
             "PRIMARY KEY(`id`)) CHARACTER SET=utf8mb4 ENGINE=InnoDB;"
         )

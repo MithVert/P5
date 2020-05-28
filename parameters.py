@@ -22,7 +22,7 @@ CHOSENCATEGORIES = (
 
 CHOSENCATEGORIESNAME = {
     "boissons": "Boissons", "plats-prepares": "Plats préparés",
-    "biscuits_et_gateaux": "Biscuits et gâteaux",
+    "biscuits-et-gateaux": "Biscuits et gâteaux",
     "produits-a-tartiner-sucres": "Produits à tartiner sucrés",
     "sauces": "Sauces"
 }
