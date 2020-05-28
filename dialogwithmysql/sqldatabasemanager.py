@@ -55,7 +55,6 @@ class Sqldatabasemanager():
 
         table = (
             "CREATE TABLE `Products` ( `id` SMALLINT AUTO_INCREMENT, "
-            "`idmaincat` SMALLINT, "
         )
 
         for s in CHOSENCOLUMNS:

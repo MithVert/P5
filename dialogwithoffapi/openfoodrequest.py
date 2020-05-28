@@ -58,7 +58,7 @@ class Openfoodrequest():
 
             for productdata in returneddata:
 
-                productdata["maincategorie"] = self.categorie
+                productdata["categorie"] = self.categorie
 
             return returneddata
 

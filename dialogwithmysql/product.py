@@ -1,9 +1,12 @@
+from parameters import CHOSENCATEGORIESNAME
+
+
 class Product():
 
     """class representing a product"""
 
-    def __init__(self, sqlmng, id=None, data=None):
-        self.id = id
+    def __init__(self, sqlmng, idp=None, data=None):
+        self.id = idp
         self.sqlmng = sqlmng
         self.data = data
 
@@ -14,8 +17,14 @@ class Product():
         valuesstr = ""
         for column in self.data:
             columnliststr = columnliststr + column + ", "
-            valuestuple = valuestuple + (self.data[column],)
             valuesstr = valuesstr + "%s, "
+            if column == "Categorie":
+                valuestuple = (
+                    valuestuple
+                    + (CHOSENCATEGORIESNAME[self.data[columnliststr]],)
+                )
+            else:
+                valuestuple = valuestuple + (self.data[column],)
         columnliststr = columnliststr[:-2]
         valuesstr = valuesstr[:-2]
         query = (
@@ -25,6 +34,7 @@ class Product():
         cur = self.sqlmng.cnx.cursor()
         cur.execute(query, valuestuple)
         self.sqlmng.cnx.commit()
+        self.id = cur.lastrowid
 
     def loadproduct(self):
 
