@@ -8,4 +8,4 @@ protobuf==3.6.1
 requests==2.23.0
 six==1.14.0
 tk==0.1.0
-urllib3==1.25.8
+urllib3==1.26.5
