@@ -4,7 +4,7 @@ dnspython==1.16.0
 idna==2.9
 langdetect==1.0.8
 mysql-connector-python==8.0.19
-protobuf==3.6.1
+protobuf==3.18.3
 requests==2.23.0
 six==1.14.0
 tk==0.1.0
